@@ -6,23 +6,17 @@ namespace SRTPluginProviderRE7
 {
     public interface IGameMemoryRE7
     {
+        string VersionInfo { get; }
         string MapName { get; set; }
-        float CurrentDA { get; set; }
-        float CurrentHP { get; set; }
-        float MaxHP { get; set; }
-        int MrEverything { get; set; }
-        int FileCount { get; set; }
-        int CoinCount { get; set; }
+        float PlayerCurrentHealth { get; set; }
+        float PlayerMaxHealth { get; set; }
+        float RankScore { get; set; }
+        int Rank { get; }
         int EnemyCount { get; set; }
-        EnemyHP[] EnemyHealth { get; set; }
-        JackEyeHP[] JackEyeHealth { get; set; }
         int PlayerInventoryCount { get; set; }
         int PlayerInventorySlots { get; set; }
-        int PlayerCurrentSelectedInventorySlots { get; set; }
+        int PlayerCurrentSelectedInventorySlots { get; set; }        
+        EnemyHP[] EnemyHealth { get; set; }
         InventoryEntry[] PlayerInventory { get; set; }
-        long Timestamp { get; set; }
-        int GameState { get; set; }
-        int GameplayState { get; set; }
-        int GameInit { get; set; }
     }
 }

@@ -1,0 +1,12 @@
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\bin\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.deps.json
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\bin\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.dll
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\bin\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.pdb
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\bin\x64\Release\netcoreapp3.1\ProcessMemory64.dll
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\bin\x64\Release\netcoreapp3.1\ProcessMemory64.pdb
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\obj\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.csproj.AssemblyReference.cache
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\obj\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.AssemblyInfoInputs.cache
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\obj\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.AssemblyInfo.cs
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\obj\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.csproj.CoreCompileInputs.cache
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\obj\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.csproj.CopyComplete
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\obj\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.dll
+C:\Users\video\source\repos\SRTPluginProviderRE7\SRTPluginProviderRE7\obj\x64\Release\netcoreapp3.1\SRTPluginProviderRE7.pdb

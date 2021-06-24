@@ -64,13 +64,13 @@
     },
     "ProcessMemory64/2.3.3": {
       "type": "project",
-      "path": "../../ProcessMemory/ProcessMemory/ProcessMemory.csproj",
-      "msbuildProject": "../../ProcessMemory/ProcessMemory/ProcessMemory.csproj"
+      "path": "../../../Squirrelies/ProcessMemory/ProcessMemory/ProcessMemory.csproj",
+      "msbuildProject": "../../../Squirrelies/ProcessMemory/ProcessMemory/ProcessMemory.csproj"
     },
     "SRTPluginBase/2.4.3": {
       "type": "project",
-      "path": "../../SRTHost/SRTPluginBase/SRTPluginBase.csproj",
-      "msbuildProject": "../../SRTHost/SRTPluginBase/SRTPluginBase.csproj"
+      "path": "../../../Squirrelies/SRTHost/SRTPluginBase/SRTPluginBase.csproj",
+      "msbuildProject": "../../../Squirrelies/SRTHost/SRTPluginBase/SRTPluginBase.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -85,11 +85,11 @@
   "project": {
     "version": "1.0.0.2",
     "restore": {
-      "projectUniqueName": "C:\\Users\\video\\source\\repos\\SRTPluginProviderRE7\\SRTPluginProviderRE7\\SRTPluginProviderRE7.csproj",
+      "projectUniqueName": "C:\\Users\\video\\source\\repos\\ResidentEvilSpeedrunning\\SRTPluginProviderRE7\\SRTPluginProviderRE7\\SRTPluginProviderRE7.csproj",
       "projectName": "SRTPluginProviderRE7",
-      "projectPath": "C:\\Users\\video\\source\\repos\\SRTPluginProviderRE7\\SRTPluginProviderRE7\\SRTPluginProviderRE7.csproj",
+      "projectPath": "C:\\Users\\video\\source\\repos\\ResidentEvilSpeedrunning\\SRTPluginProviderRE7\\SRTPluginProviderRE7\\SRTPluginProviderRE7.csproj",
       "packagesPath": "C:\\Users\\video\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\video\\source\\repos\\SRTPluginProviderRE7\\SRTPluginProviderRE7\\obj\\",
+      "outputPath": "C:\\Users\\video\\source\\repos\\ResidentEvilSpeedrunning\\SRTPluginProviderRE7\\SRTPluginProviderRE7\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\video\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -106,11 +106,11 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "C:\\Users\\video\\source\\repos\\ProcessMemory\\ProcessMemory\\ProcessMemory.csproj": {
-              "projectPath": "C:\\Users\\video\\source\\repos\\ProcessMemory\\ProcessMemory\\ProcessMemory.csproj"
+            "C:\\Users\\video\\source\\repos\\Squirrelies\\ProcessMemory\\ProcessMemory\\ProcessMemory.csproj": {
+              "projectPath": "C:\\Users\\video\\source\\repos\\Squirrelies\\ProcessMemory\\ProcessMemory\\ProcessMemory.csproj"
             },
-            "C:\\Users\\video\\source\\repos\\SRTHost\\SRTPluginBase\\SRTPluginBase.csproj": {
-              "projectPath": "C:\\Users\\video\\source\\repos\\SRTHost\\SRTPluginBase\\SRTPluginBase.csproj",
+            "C:\\Users\\video\\source\\repos\\Squirrelies\\SRTHost\\SRTPluginBase\\SRTPluginBase.csproj": {
+              "projectPath": "C:\\Users\\video\\source\\repos\\Squirrelies\\SRTHost\\SRTPluginBase\\SRTPluginBase.csproj",
               "excludeAssets": "runtime"
             }
           }

@@ -7,7 +7,7 @@
     <LangVersion>latest</LangVersion>
     <Platforms>x64</Platforms>
     <!-- netcoreapp3.1 had to be hardcoded here because this project reports $(TargetFramework) as netstandard2.0 (rightfully so) and I am not sure how this project's csproj can auto-detect another project's framework version to copy it to the appropriate folder so we're just... hardcoding this. -->
-    <CopyDestionationPath>$(SolutionDir)..\SRTHost\SRTHost\bin\$(Configuration)\netcoreapp3.1\plugins</CopyDestionationPath>
+    <CopyDestionationPath>$(SolutionDir)..\..\Squirrelies\SRTHost\SRTHost\bin\$(Configuration)\netcoreapp3.1\plugins</CopyDestionationPath>
     <Version>1.0.0.2</Version>
     <FileVersion>1.0.0.2</FileVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>

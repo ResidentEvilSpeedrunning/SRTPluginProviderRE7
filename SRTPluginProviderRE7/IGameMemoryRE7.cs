@@ -6,6 +6,7 @@ namespace SRTPluginProviderRE7
 {
     public interface IGameMemoryRE7
     {
+        string GameName { get; }
         string VersionInfo { get; }
         string MapName { get; set; }
         float PlayerCurrentHealth { get; set; }
@@ -18,5 +19,6 @@ namespace SRTPluginProviderRE7
         int PlayerCurrentSelectedInventorySlots { get; set; }        
         EnemyHP[] EnemyHealth { get; set; }
         InventoryEntry[] PlayerInventory { get; set; }
+
     }
 }

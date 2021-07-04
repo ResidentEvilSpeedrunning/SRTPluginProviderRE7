@@ -9,6 +9,7 @@ namespace SRTPluginProviderRE7
 {
     public class GameMemoryRE7 : IGameMemoryRE7
     {
+        public string GameName => "RE7";
         public string VersionInfo => FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion;
         public string MapName { get => _mapName; set => _mapName = value; }
         internal string _mapName;

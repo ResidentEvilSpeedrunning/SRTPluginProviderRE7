@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    ".NETCoreApp,Version=v3.1": {
+    "net5.0": {
       "System.Text.Json/4.7.2": {
         "type": "package",
         "compile": {
@@ -24,9 +24,9 @@
           "bin/placeholder/ProcessMemory64.dll": {}
         }
       },
-      "SRTPluginBase/2.4.3": {
+      "SRTPluginBase/3.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v3.1",
+        "framework": ".NETStandard,Version=v2.1",
         "dependencies": {
           "System.Text.Json": "4.7.2"
         },
@@ -67,23 +67,23 @@
       "path": "../../../Squirrelies/ProcessMemory/ProcessMemory/ProcessMemory.csproj",
       "msbuildProject": "../../../Squirrelies/ProcessMemory/ProcessMemory/ProcessMemory.csproj"
     },
-    "SRTPluginBase/2.4.3": {
+    "SRTPluginBase/3.0.0": {
       "type": "project",
       "path": "../../../Squirrelies/SRTHost/SRTPluginBase/SRTPluginBase.csproj",
       "msbuildProject": "../../../Squirrelies/SRTHost/SRTPluginBase/SRTPluginBase.csproj"
     }
   },
   "projectFileDependencyGroups": {
-    ".NETCoreApp,Version=v3.1": [
+    "net5.0": [
       "ProcessMemory64 >= 2.3.3",
-      "SRTPluginBase >= 2.4.3"
+      "SRTPluginBase >= 3.0.0"
     ]
   },
   "packageFolders": {
     "C:\\Users\\video\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "1.0.0.2",
+    "version": "1.0.0.3",
     "restore": {
       "projectUniqueName": "C:\\Users\\video\\source\\repos\\ResidentEvilSpeedrunning\\SRTPluginProviderRE7\\SRTPluginProviderRE7\\SRTPluginProviderRE7.csproj",
       "projectName": "SRTPluginProviderRE7",
@@ -96,15 +96,15 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "netcoreapp3.1"
+        "net5.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "netcoreapp3.1": {
-          "targetAlias": "netcoreapp3.1",
+        "net5.0": {
+          "targetAlias": "net5.0",
           "projectReferences": {
             "C:\\Users\\video\\source\\repos\\Squirrelies\\ProcessMemory\\ProcessMemory\\ProcessMemory.csproj": {
               "projectPath": "C:\\Users\\video\\source\\repos\\Squirrelies\\ProcessMemory\\ProcessMemory\\ProcessMemory.csproj"
@@ -123,8 +123,8 @@
       }
     },
     "frameworks": {
-      "netcoreapp3.1": {
-        "targetAlias": "netcoreapp3.1",
+      "net5.0": {
+        "targetAlias": "net5.0",
         "imports": [
           "net461",
           "net462",

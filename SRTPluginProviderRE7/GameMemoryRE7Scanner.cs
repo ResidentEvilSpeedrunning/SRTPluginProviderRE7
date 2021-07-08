@@ -25,18 +25,15 @@ namespace SRTPluginProviderRE7
         private long enemyHitPoints;
         private long selectedSlot;
         private long itemCount;
-        private long mapName;
         private long bagCount;
 
         // Pointer Classes
         private long BaseAddress { get; set; }
         private MultilevelPointer PointerDA { get; set; }
-        private MultilevelPointer PointerMapName { get; set; }
         private MultilevelPointer PointerHP { get; set; }
         private MultilevelPointer PointerBagCount { get; set; }
         private MultilevelPointer PointerInventoryCount { get; set; }
         private MultilevelPointer PointerInventorySlotSelected { get; set; }
-        private MultilevelPointer PointerEnemyEntryCount { get; set; }
         private MultilevelPointer[] PointerEnemyEntries { get; set; }
         private MultilevelPointer[] PointerItemNames { get; set; }
         private MultilevelPointer[] PointerItemInfo { get; set; }
@@ -67,38 +64,37 @@ namespace SRTPluginProviderRE7
             {
                 BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, PInvoke.ListModules.LIST_MODULES_64BIT).ToInt64(); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn't.
                 PointerDA = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + difficultyAdjustment));
-                PointerMapName = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + mapName), 0x700L);
                 PointerHP = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + hitPoints), 0xA0L, 0xD0L, 0x70L);
-                PointerEnemyEntryCount = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + enemyHitPoints), 0x190L, 0x70L);
                 
                 PointerBagCount = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + bagCount));
                 PointerInventoryCount = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + itemCount), 0x60L);
                 PointerInventorySlotSelected = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + selectedSlot), 0x240L, 0x58L, 0x228L);
-                PointerItemNames = new MultilevelPointer[24];
-                PointerItemInfo = new MultilevelPointer[24];
-                
-                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
-                GenerateEnemyEntries();
-            }
-        }
 
-        private void GenerateEnemyEntries()
-        {
-            long position;
-            // Loop through and create all of the pointers for the table.
-            for (long i = 0; i < PointerEnemyEntries.Length; ++i)
-            {
-                position = 0x0L + (i * 0x08L);
-                PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + enemyHitPoints), 0x58L, 0xB0L, 0x70L, 0x20L, position, 0x70L);
+                gameMemoryValues.PlayerInventory = new InventoryEntry[MAX_ITEMS];
+                PointerItemNames = new MultilevelPointer[MAX_ITEMS];
+                PointerItemInfo = new MultilevelPointer[MAX_ITEMS];
+
+                gameMemoryValues.EnemyHealth = new EnemyHP[MAX_ENTITIES];
+                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
+                
+                long position;
+                // Loop through and create all of the pointers for the table.
+                for (long i = 0; i < PointerEnemyEntries.Length; ++i)
+                {
+                    position = 0x0L + (i * 0x08L);
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + enemyHitPoints), 0x58L, 0xB0L, 0x70L, 0x20L, position, 0x70L);
+                    gameMemoryValues.EnemyHealth[i] = new EnemyHP();
+                }
+
+                for (var i = 0; i < gameMemoryValues.PlayerInventory.Length; ++i)
+                {
+                    gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
+                }
             }
         }
 
         private void GetItems()
         {
-            if (gameMemoryValues.PlayerInventory == null)
-            {
-                gameMemoryValues.PlayerInventory = new InventoryEntry[MAX_ITEMS];
-            }
             if (gameMemoryValues.PlayerInventoryCount != 0)
             {
                 for (var i = 0; i < gameMemoryValues.PlayerInventoryCount; i++)
@@ -128,10 +124,6 @@ namespace SRTPluginProviderRE7
         {
             if (gameMemoryValues.PlayerInventoryCount != 0)
             {
-                for (int i = 0; i < gameMemoryValues.PlayerInventory.Length; ++i)
-                {
-                    gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
-                }
                 for (var i = 0; i < gameMemoryValues.PlayerInventoryCount; i++)
                 {
                     var length = PointerItemNames[i].DerefInt(0x20);
@@ -153,7 +145,6 @@ namespace SRTPluginProviderRE7
                 itemCount = 0x081F1308;
                 hitPoints = 0x081EA150;
                 enemyHitPoints = 0x081E9A98;
-                mapName = 0x081E9B00;
                 bagCount = 0x081EA150;
                 Console.WriteLine("Steam Version Detected!");
             }
@@ -163,7 +154,6 @@ namespace SRTPluginProviderRE7
                 itemCount = 0x093352C0;
                 hitPoints = 0x9373DB8;
                 enemyHitPoints = 0x09417178;
-                mapName = 0x0932F7E8;
                 bagCount = 0x09373DB8;
                 Console.WriteLine("Microsoft Store Version Detected!");
             } 
@@ -180,13 +170,10 @@ namespace SRTPluginProviderRE7
         internal void UpdatePointers()
         {
             PointerDA.UpdatePointers();
-            PointerMapName.UpdatePointers();
             PointerHP.UpdatePointers();
             PointerBagCount.UpdatePointers();
             PointerInventoryCount.UpdatePointers();
             PointerInventorySlotSelected.UpdatePointers();
-            PointerEnemyEntryCount.UpdatePointers();
-            GenerateEnemyEntries(); // This has to be here for the next part.
             for (int i = 0; i < PointerEnemyEntries.Length; ++i)
             {
                 PointerEnemyEntries[i].UpdatePointers();
@@ -195,7 +182,6 @@ namespace SRTPluginProviderRE7
 
         internal IGameMemoryRE7 Refresh()
         {
-            GetMap();
             gameMemoryValues._rankScore = PointerDA.DerefFloat(0xF8);
             gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x20);
             GetBagCount();
@@ -212,29 +198,20 @@ namespace SRTPluginProviderRE7
             if (PointerInventorySlotSelected.Address != IntPtr.Zero)
             {
                 gameMemoryValues._playerCurrentSelectedInventorySlots = PointerInventorySlotSelected.DerefInt(0x24);
+                return;
             }
-            else
-            {
-                gameMemoryValues._playerCurrentSelectedInventorySlots = -1;
-            }
+            gameMemoryValues._playerCurrentSelectedInventorySlots = 0;
         }
 
         private void GetEnemies()
         {
-            GenerateEnemyEntries();
-            if (gameMemoryValues.EnemyHealth == null)
-            {
-                gameMemoryValues.EnemyHealth = new EnemyHP[MAX_ENTITIES];
-                for (int i = 0; i < MAX_ENTITIES; ++i)
-                    gameMemoryValues.EnemyHealth[i] = new EnemyHP();
-            }
             for (int i = 0; i < gameMemoryValues.EnemyHealth.Length; ++i)
             {
                 if (PointerEnemyEntries[i].Address != IntPtr.Zero)
                 {
-                        GamePlayer enemyHP = PointerEnemyEntries[i].Deref<GamePlayer>(0x20);
-                        gameMemoryValues.EnemyHealth[i]._maximumHP = enemyHP.MaxHP;
-                        gameMemoryValues.EnemyHealth[i]._currentHP = enemyHP.CurrentHP;
+                    GamePlayer enemyHP = PointerEnemyEntries[i].Deref<GamePlayer>(0x20);
+                    gameMemoryValues.EnemyHealth[i]._maximumHP = enemyHP.MaxHP;
+                    gameMemoryValues.EnemyHealth[i]._currentHP = enemyHP.CurrentHP;
                 }
                 else
                 {
@@ -253,37 +230,6 @@ namespace SRTPluginProviderRE7
             else
             {
                 gameMemoryValues._playerInventorySlots = 12;
-            }
-        }
-
-        private void GetMap()
-        {
-            try
-            {
-                byte[] bytes = new byte[0];
-                try { bytes = PointerMapName.DerefByteArray(0x0, 64); }
-                catch { gameMemoryValues._mapName = "None"; }
-        
-                int length = 0;
-                for (var i = 0; i < bytes.Length; i += 2)
-                {
-                    if (bytes[i] == 0x00 && bytes[i + 1] == 0x00)
-                    {
-                        length = i;
-                        break;
-                    }
-                }
-                if (length == 0) { 
-                    gameMemoryValues._mapName = "None";
-                }
-                else
-                {
-                    gameMemoryValues._mapName = System.Text.Encoding.Unicode.GetString(bytes, 0, length);
-                }
-            }
-            catch
-            {
-                gameMemoryValues._mapName = "None";
             }
         }
 

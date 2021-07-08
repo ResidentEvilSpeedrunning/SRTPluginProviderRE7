@@ -9,16 +9,16 @@ namespace SRTPluginProviderRE7
     {
         string GameName { get; }
         string VersionInfo { get; }
-        //string MapName { get; set; }
+        string MapName { get; set; }
         GamePlayer Player { get; set; }
         float RankScore { get; set; }
         int Rank { get; }
-        //int EnemyCount { get; set; }
-        //int PlayerInventoryCount { get; set; }
-        //int PlayerInventorySlots { get; set; }
-        //int PlayerCurrentSelectedInventorySlots { get; set; }        
-        //EnemyHP[] EnemyHealth { get; set; }
-        //InventoryEntry[] PlayerInventory { get; set; }
+        int EnemyCount { get; set; }
+        int PlayerInventoryCount { get; set; }
+        int PlayerInventorySlots { get; set; }
+        int PlayerCurrentSelectedInventorySlots { get; set; }        
+        EnemyHP[] EnemyHealth { get; set; }
+        InventoryEntry[] PlayerInventory { get; set; }
 
     }
 }

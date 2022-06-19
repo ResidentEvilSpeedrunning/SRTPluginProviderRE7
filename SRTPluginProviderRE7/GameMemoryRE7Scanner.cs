@@ -11,6 +11,7 @@ namespace SRTPluginProviderRE7
     {
         private static readonly int MAX_ENTITIES = 64;
         private static readonly int MAX_ITEMS = 24;
+        private static readonly int MAX_JACKEYES = 8;
 
         // Variables
         private ProcessMemoryHandler memoryAccess;
@@ -20,21 +21,23 @@ namespace SRTPluginProviderRE7
         public int ProcessExitCode => (memoryAccess != null) ? memoryAccess.ProcessExitCode : 0;
 
         // Pointer Address Variables
-        private long difficultyAdjustment;
-        private long hitPoints;
-        private long enemyHitPoints;
-        private long selectedSlot;
-        private long itemCount;
-        private long bagCount;
+        private int pointerAddressDifficultyAdjustment;
+        private int pointerAddressHP;
+        private int pointerAddressEnemyHP;
+        private int pointerAddressSelectedSlot;
+        private int pointerAddressItemCount;
+        private int pointerAddressBagCount;
+        private int pointerAddressJackEyeHP;
 
         // Pointer Classes
-        private long BaseAddress { get; set; }
+        private IntPtr BaseAddress { get; set; }
         private MultilevelPointer PointerDA { get; set; }
         private MultilevelPointer PointerHP { get; set; }
         private MultilevelPointer PointerBagCount { get; set; }
         private MultilevelPointer PointerInventoryCount { get; set; }
         private MultilevelPointer PointerInventorySlotSelected { get; set; }
         private MultilevelPointer[] PointerEnemyEntries { get; set; }
+        private MultilevelPointer[] PointerJackEyeHPs { get; set; }
         private MultilevelPointer[] PointerItemNames { get; set; }
         private MultilevelPointer[] PointerItemInfo { get; set; }
 
@@ -42,54 +45,163 @@ namespace SRTPluginProviderRE7
         /// 
         /// </summary>
         /// <param name="proc"></param>
-        internal GameMemoryRE7Scanner(int? pid = null)
+        internal GameMemoryRE7Scanner(Process process, GameVersion gv)
         {
             gameMemoryValues = new GameMemoryRE7();
-
-            if (pid != null)
-            {
-                Initialize(pid.Value);
-            }
-
-            // Setup the pointers.
-            
+            if (process != null)
+                Initialize(process, gv);
         }
 
-        internal void Initialize(int pid)
+        internal void Initialize(Process process, GameVersion gv)
         {
-            SelectPointerAddresses(GameHashes.DetectVersion(Process.GetProcessesByName("re7").FirstOrDefault().MainModule.FileName));
-            memoryAccess = new ProcessMemoryHandler(pid, false);
+            if (process == null)
+                return;
+            SelectPointerAddresses(GameHashes.DetectVersion(process.MainModule.FileName));
+
+            int pid = GetProcessId(process).Value;
+            memoryAccess = new ProcessMemoryHandler(pid);
 
             if (ProcessRunning)
             {
-                BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, PInvoke.ListModules.LIST_MODULES_64BIT).ToInt64(); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn't.
-                PointerDA = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + difficultyAdjustment));
-                PointerHP = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + hitPoints), 0xA0L, 0xD0L, 0x70L);
-                
-                PointerBagCount = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + bagCount));
-                PointerInventoryCount = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + itemCount), 0x60L);
-                PointerInventorySlotSelected = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + selectedSlot), 0x240L, 0x58L, 0x228L);
+                BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, PInvoke.ListModules.LIST_MODULES_64BIT); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn'
+                if (gv == GameVersion.STEAM_December2021)
+                {
+                    Console.WriteLine("This is steamversion december 2021");
+                    PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
+                    PointerHP = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressHP), 0x2C0, 0x38, 0x70);
 
-                gameMemoryValues.PlayerInventory = new InventoryEntry[MAX_ITEMS];
-                PointerItemNames = new MultilevelPointer[MAX_ITEMS];
-                PointerItemInfo = new MultilevelPointer[MAX_ITEMS];
 
-                gameMemoryValues.EnemyHealth = new EnemyHP[MAX_ENTITIES];
+                    PointerBagCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressBagCount));
+                    PointerInventoryCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressItemCount), 0x68, 0x28);
+                    PointerInventorySlotSelected = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressSelectedSlot), 0x68, 0x28);
+
+                    gameMemoryValues.PlayerInventory = new InventoryEntry[MAX_ITEMS];
+                    PointerItemNames = new MultilevelPointer[MAX_ITEMS];
+                    PointerItemInfo = new MultilevelPointer[MAX_ITEMS];
+
+                    // Loop through and create all of the pointers for the table.
+                    gameMemoryValues._enemyHealth = new EnemyHP[MAX_ENTITIES];
+                    for (int i = 0; i < MAX_ENTITIES; ++i)
+                        gameMemoryValues._enemyHealth[i] = new EnemyHP();
+
+                    GenerateEnemyEntriesWindows();
+
+                    gameMemoryValues._jackHP = new JackEyeHP[MAX_JACKEYES];
+                    for (int i = 0; i < MAX_JACKEYES; ++i)
+                        gameMemoryValues._jackHP[i] = new JackEyeHP();
+
+                    GenerateJackEyesWindows();
+
+                    for (var i = 0; i < gameMemoryValues.PlayerInventory.Length; ++i)
+                    {
+                        gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
+                    }
+                }
+                else if(gv == GameVersion.STEAM_June2022)
+                {
+                    Console.WriteLine("This is steam version june 2022");
+                    PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
+                    PointerHP = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x70);
+
+
+                    PointerBagCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressBagCount));
+                    PointerInventoryCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressItemCount), 0x68, 0x28);
+                    PointerInventorySlotSelected = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressSelectedSlot), 0x68, 0x28);
+
+                    gameMemoryValues.PlayerInventory = new InventoryEntry[MAX_ITEMS];
+                    PointerItemNames = new MultilevelPointer[MAX_ITEMS];
+                    PointerItemInfo = new MultilevelPointer[MAX_ITEMS];
+
+                    // Loop through and create all of the pointers for the table.
+                    gameMemoryValues._enemyHealth = new EnemyHP[MAX_ENTITIES];
+                    for (int i = 0; i < MAX_ENTITIES; ++i)
+                        gameMemoryValues._enemyHealth[i] = new EnemyHP();
+
+                    GenerateEnemyEntriesSteam();
+
+                    gameMemoryValues._jackHP = new JackEyeHP[MAX_JACKEYES];
+                    for (int i = 0; i < MAX_JACKEYES; ++i)
+                        gameMemoryValues._jackHP[i] = new JackEyeHP();
+
+                    GenerateJackEyesSteam();
+
+                    for (var i = 0; i < gameMemoryValues.PlayerInventory.Length; ++i)
+                    {
+                        gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
+                    }
+                } 
+                else
+                {
+                    Console.WriteLine("This is Windows");
+                    PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
+                    PointerHP = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressHP), 0x2C0, 0x38, 0x70);
+
+
+                    PointerBagCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressBagCount));
+                    PointerInventoryCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressItemCount), 0x68, 0x28);
+                    PointerInventorySlotSelected = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressSelectedSlot), 0x68, 0x28);
+
+                    gameMemoryValues.PlayerInventory = new InventoryEntry[MAX_ITEMS];
+                    PointerItemNames = new MultilevelPointer[MAX_ITEMS];
+                    PointerItemInfo = new MultilevelPointer[MAX_ITEMS];
+
+                    // Loop through and create all of the pointers for the table.
+                    gameMemoryValues._enemyHealth = new EnemyHP[MAX_ENTITIES];
+                    for (int i = 0; i < MAX_ENTITIES; ++i)
+                        gameMemoryValues._enemyHealth[i] = new EnemyHP();
+
+                    GenerateEnemyEntriesWindows();
+
+                    gameMemoryValues._jackHP = new JackEyeHP[MAX_JACKEYES];
+                    for (int i = 0; i < MAX_JACKEYES; ++i)
+                        gameMemoryValues._jackHP[i] = new JackEyeHP();
+
+                    GenerateJackEyesWindows();
+
+                    for (var i = 0; i < gameMemoryValues.PlayerInventory.Length; ++i)
+                    {
+                        gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
+                    }
+                }
+            }
+        }
+        private unsafe void GenerateEnemyEntriesWindows()
+        {
+            if (PointerEnemyEntries == null)
+            {
                 PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
-                
-                long position;
-                // Loop through and create all of the pointers for the table.
-                for (long i = 0; i < PointerEnemyEntries.Length; ++i)
-                {
-                    position = 0x0L + (i * 0x08L);
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + enemyHitPoints), 0x58L, 0xB0L, 0x70L, 0x20L, position, 0x70L);
-                    gameMemoryValues.EnemyHealth[i] = new EnemyHP();
-                }
+                for (int i = 0; i < MAX_ENTITIES; ++i)
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x190, 0x490, 0x20, 0x8 + (i * 0x8), 0x58, 0x70);
+            }
 
-                for (var i = 0; i < gameMemoryValues.PlayerInventory.Length; ++i)
-                {
-                    gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
-                }
+        }
+        private unsafe void GenerateEnemyEntriesSteam()
+        {
+            if (PointerEnemyEntries == null)
+            {
+                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
+                for (int i = 0; i < MAX_ENTITIES; ++i)
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x40 + (i * 0x8), 0x58, 0x70);
+            }
+
+        }
+        private unsafe void GenerateJackEyesWindows()
+        {
+            if (PointerJackEyeHPs == null)
+            {
+                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
+                for (int i = 0; i < MAX_JACKEYES; ++i)
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0x40, 0x30, 0xB8, 0x110, 0x90, 0x20, 0x30 + (i * 0x8));
+            }
+        }
+
+        private unsafe void GenerateJackEyesSteam()
+        {
+            if (PointerJackEyeHPs == null)
+            {
+                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
+                for (int i = 0; i < MAX_JACKEYES; ++i)
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0x7B8, 0x28, 0x320, 0x90, 0x58, 0x60 + (i * 0x8));
             }
         }
 
@@ -100,8 +212,8 @@ namespace SRTPluginProviderRE7
                 for (var i = 0; i < gameMemoryValues.PlayerInventoryCount; i++)
                 {
                     long position = (0x30L + (0x8L * i));
-                    PointerItemNames[i] = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + itemCount), 0x60L, 0x20L, position, 0x28L, 0x80L);
-                    PointerItemInfo[i] = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + itemCount), 0x60L, 0x20L, position, 0x28L);
+                    PointerItemNames[i] = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + pointerAddressItemCount), 0x60L, 0x20L, position, 0x28L, 0x80L);
+                    PointerItemInfo[i] = new MultilevelPointer(memoryAccess, (IntPtr)(BaseAddress + pointerAddressItemCount), 0x60L, 0x20L, position, 0x28L);
                 }
                 UpdateItems();
             }
@@ -138,23 +250,36 @@ namespace SRTPluginProviderRE7
 
         private void SelectPointerAddresses(GameVersion version)
         {
-            if (version == GameVersion.STEAM)
+            if (version == GameVersion.STEAM_December2021)
             {
-                difficultyAdjustment = 0x081FA818;
-                selectedSlot = 0x081F2620;
-                itemCount = 0x081F1308;
-                hitPoints = 0x081EA150;
-                enemyHitPoints = 0x081E9A98;
-                bagCount = 0x081EA150;
-                Console.WriteLine("Steam Version Detected!");
+                pointerAddressDifficultyAdjustment = 0x081FA818;
+                pointerAddressSelectedSlot = 0x081F2620;
+                pointerAddressItemCount = 0x081F1308;
+                pointerAddressHP = 0x081EA150;
+                pointerAddressEnemyHP = 0x081E9A98;
+                pointerAddressBagCount = 0x081EA150;
+                pointerAddressJackEyeHP = 0x093881A0;
+                Console.WriteLine("Steam Version December 2021 Detected!");
+            }
+            else if(version == GameVersion.STEAM_June2022)
+            {
+                pointerAddressDifficultyAdjustment = 0x08FC42F8;
+                pointerAddressSelectedSlot = 0x081F2620;
+                pointerAddressItemCount = 0x081F1308;
+                pointerAddressHP = 0x08F8D9A8;
+                pointerAddressEnemyHP = 0x08F8BE68;
+                pointerAddressBagCount = 0x081EA150;
+                pointerAddressJackEyeHP = 0x08FBA528;
+                Console.WriteLine("Steam Version June 2022 Detected!");
             }
             else if (version == GameVersion.WINDOWS){
-                difficultyAdjustment = 0x0933E618;
-                selectedSlot = 0x09336170;
-                itemCount = 0x093352C0;
-                hitPoints = 0x9373DB8;
-                enemyHitPoints = 0x09417178;
-                bagCount = 0x09373DB8;
+                pointerAddressDifficultyAdjustment = 0x09384AB8;
+                pointerAddressSelectedSlot = 0x09336170;
+                pointerAddressItemCount = 0x093352C0;
+                pointerAddressHP = 0x09384AB8;
+                pointerAddressEnemyHP = 0x0934A598;
+                pointerAddressBagCount = 0x09373DB8;
+                pointerAddressJackEyeHP = 0x093881A0;
                 Console.WriteLine("Microsoft Store Version Detected!");
             } 
             else
@@ -175,23 +300,30 @@ namespace SRTPluginProviderRE7
             PointerInventoryCount.UpdatePointers();
             PointerInventorySlotSelected.UpdatePointers();
             for (int i = 0; i < PointerEnemyEntries.Length; ++i)
-            {
                 PointerEnemyEntries[i].UpdatePointers();
-            }
-        }
 
+            for (int i = 0; i < PointerJackEyeHPs.Length; ++i)
+                PointerJackEyeHPs[i].UpdatePointers();
+        }
         internal IGameMemoryRE7 Refresh()
         {
-            gameMemoryValues._rankScore = PointerDA.DerefFloat(0xF8);
+            GetEnemiesSteam();
+            GetJackEyesSteam();
+            gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x10);
+            GetEnemiesWindows();
+            GetJackEyesWindows();
             gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x20);
+            gameMemoryValues._rankScore = PointerDA.DerefFloat(0xF8);
             GetBagCount();
             gameMemoryValues._playerInventoryCount = PointerInventoryCount.DerefInt(0x28);
-            GetEnemies();
             GetSelectedIndex();
             GetItems();
             HasScanned = true;
+
+
             return gameMemoryValues;
         }
+
 
         private void GetSelectedIndex()
         {
@@ -203,7 +335,24 @@ namespace SRTPluginProviderRE7
             gameMemoryValues._playerCurrentSelectedInventorySlots = 0;
         }
 
-        private void GetEnemies()
+        private void GetEnemiesSteam()
+        {
+            for (int i = 0; i < gameMemoryValues.EnemyHealth.Length; ++i)
+            {
+                if (PointerEnemyEntries[i].Address != IntPtr.Zero)
+                {
+                    GamePlayer enemyHP = PointerEnemyEntries[i].Deref<GamePlayer>(0x10);
+                    gameMemoryValues.EnemyHealth[i]._maximumHP = enemyHP.MaxHP;
+                    gameMemoryValues.EnemyHealth[i]._currentHP = enemyHP.CurrentHP;
+                }
+                else
+                {
+                    gameMemoryValues.EnemyHealth[i]._maximumHP = 0;
+                    gameMemoryValues.EnemyHealth[i]._currentHP = 0;
+                }
+            }
+        }
+        private void GetEnemiesWindows()
         {
             for (int i = 0; i < gameMemoryValues.EnemyHealth.Length; ++i)
             {
@@ -221,6 +370,41 @@ namespace SRTPluginProviderRE7
             }
         }
 
+        private void GetJackEyesSteam()
+        {
+            for(int i = 0; i < gameMemoryValues.JackHP.Length; ++i)
+            {
+                if(PointerJackEyeHPs[i].Address != IntPtr.Zero)
+                {
+                    GamePlayer jackHP = PointerJackEyeHPs[i].Deref<GamePlayer>(0x10);
+                    gameMemoryValues.JackHP[i]._maximumHP = PointerJackEyeHPs[i].DerefFloat(0x10);
+                    gameMemoryValues.JackHP[i]._currentHP = PointerJackEyeHPs[i].DerefFloat(0x10);
+                } 
+                else
+                {
+                    gameMemoryValues.JackHP[i]._maximumHP = 0;
+                    gameMemoryValues.JackHP[i]._currentHP = 0;
+                }
+            }
+        }
+        private void GetJackEyesWindows()
+        {
+            for (int i = 0; i < gameMemoryValues.JackHP.Length; ++i)
+            {
+                if (PointerJackEyeHPs[i].Address != IntPtr.Zero)
+                {
+                    GamePlayer jackHP = PointerJackEyeHPs[i].Deref<GamePlayer>(0x20);
+                    gameMemoryValues.JackHP[i]._maximumHP = PointerJackEyeHPs[i].DerefFloat(0x20);
+                    gameMemoryValues.JackHP[i]._currentHP = PointerJackEyeHPs[i].DerefFloat(0x20);
+                }
+                else
+                {
+                    gameMemoryValues.JackHP[i]._maximumHP = 0;
+                    gameMemoryValues.JackHP[i]._currentHP = 0;
+                }
+            }
+        }
+
         private void GetBagCount()
         {
             if (PointerBagCount.Address != IntPtr.Zero)
@@ -233,8 +417,11 @@ namespace SRTPluginProviderRE7
             }
         }
 
-#region IDisposable Support
+        private int? GetProcessId(Process process) => process?.Id;
+
+        #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)

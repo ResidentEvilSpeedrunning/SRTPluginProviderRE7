@@ -1,47 +1,65 @@
 ﻿using SRTPluginBase;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
+using System.Security.Cryptography;
 
 namespace SRTPluginProviderRE7
 {
     public class SRTPluginProviderRE7 : IPluginProvider
     {
-        private int? processId;
         private GameMemoryRE7Scanner gameMemoryScanner;
-        private Stopwatch stopwatch;
         private IPluginHostDelegates hostDelegates;
+
+        private Process? gameProcess;
+        private Stopwatch stopwatch;
+        public bool GameRunning => !gameProcess.HasExited;
+
         public IPluginInfo Info => new PluginInfo();
 
-        public bool GameRunning
-        {
-            get
-            {
-                if (gameMemoryScanner != null && !gameMemoryScanner.ProcessRunning)
-                {
-                    processId = GetProcessId();
-                    if (processId != null)
-                    {
-                        gameMemoryScanner.Initialize((int)processId); // Re-initialize and attempt to continue.
-                    }
-                }
-
-                return gameMemoryScanner != null && gameMemoryScanner.ProcessRunning;
-            }
-        }
+        private static readonly byte[] re7steam_WW_20220614_1 = new byte[32] { 0x13, 0x8F, 0xDF, 0x58, 0x49, 0x37, 0x47, 0xDF, 0xB8, 0xA1, 0x82, 0x43, 0x25, 0x2B, 0x0F, 0x61, 0x58, 0x92, 0xC4, 0xD0, 0x10, 0xD9, 0x1C, 0x8E, 0x9E, 0xAF, 0x9B, 0x86, 0x38, 0xFA, 0x58, 0x02 };
 
         public int Startup(IPluginHostDelegates hostDelegates)
         {
             this.hostDelegates = hostDelegates;
-            processId = GetProcessId();
-            gameMemoryScanner = new GameMemoryRE7Scanner(processId);
-            stopwatch = new Stopwatch();
-            stopwatch.Start();
-            return 0;
+            gameProcess = Process.GetProcessesByName("re7").FirstOrDefault();
+            if (gameProcess != default)
+            {
+                string? filePath = gameProcess?.MainModule?.FileName;
+                if (!string.IsNullOrWhiteSpace(filePath))
+                {
+                    // detect file version now that we have the path to the exe, whether it is via checksum or if it has 'WindowsApps' in its path.
+                    // e.g.
+                    GameVersion gameVersion;
+
+                    if (filePath.Contains("WindowsApps"))
+                        gameVersion = GameVersion.WINDOWS;
+                    else
+                    {
+                        byte[] checksum;
+                        using (SHA256 hashFunc = SHA256.Create())
+                        using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+                            checksum = hashFunc.ComputeHash(fs);
+                        if (checksum.SequenceEqual(re7steam_WW_20220614_1))
+                            gameVersion = GameVersion.STEAM_June2022;
+                        else
+                            gameVersion = GameVersion.STEAM_December2021;
+                    }
+                    gameMemoryScanner = new GameMemoryRE7Scanner(gameProcess, gameVersion);
+                }
+                stopwatch = new Stopwatch();
+                stopwatch.Start();
+                return 0;
+            }   
+            else
+                return 1;
         }
 
         public int Shutdown()
         {
+            // Clean up here (disposes, nulling large objects, etc)
             gameMemoryScanner?.Dispose();
             gameMemoryScanner = null;
             stopwatch?.Stop();
@@ -53,39 +71,28 @@ namespace SRTPluginProviderRE7
         {
             try
             {
-                if (!GameRunning)
-                {
+                if (!GameRunning) // Not running? Bail out!
                     return null;
-                }
-                if (!gameMemoryScanner.ProcessRunning)
-                {
-                    //hostDelegates.Exit();
-                    processId = GetProcessId();
-                    if (processId != null)
-                    {
-                        gameMemoryScanner.Initialize(processId.Value); // re-initialize and attempt to continue
-                    }
-                    else if (!gameMemoryScanner.ProcessRunning)
-                    {
-                        stopwatch.Restart();
-                        return null;
-                    }
-                }
 
                 if (stopwatch.ElapsedMilliseconds >= 2000L)
                 {
                     gameMemoryScanner.UpdatePointers();
                     stopwatch.Restart();
                 }
+
                 return gameMemoryScanner.Refresh();
+            }
+            catch (Win32Exception ex)
+            {
+                if ((ProcessMemory.Win32Error)ex.NativeErrorCode != ProcessMemory.Win32Error.ERROR_PARTIAL_COPY)
+                    hostDelegates.ExceptionMessage(ex);// Only show the error if its not ERROR_PARTIAL_COPY. ERROR_PARTIAL_COPY is typically an issue with reading as the program exits or reading right as the pointers are changing (i.e. switching back to main menu).
             }
             catch (Exception ex)
             {
-                hostDelegates.OutputMessage("[{0}] {1} {2}", ex.GetType().Name, ex.Message, ex.StackTrace);
-                return null;
+                hostDelegates.ExceptionMessage(ex);
             }
-        }
 
-        private int? GetProcessId() => Process.GetProcessesByName("re7")?.FirstOrDefault()?.Id;
+            return null;
+        }
     }
 }

@@ -23,7 +23,10 @@ namespace SRTPluginProviderRE7
         internal int _playerInventorySlots;
         public int PlayerCurrentSelectedInventorySlots { get => _playerCurrentSelectedInventorySlots; set => _playerCurrentSelectedInventorySlots = value; }
         internal int _playerCurrentSelectedInventorySlots;       
-        public EnemyHP[] EnemyHealth { get; set; }
+        public EnemyHP[] EnemyHealth { get => _enemyHealth; set => _enemyHealth = value; }
+        internal EnemyHP[] _enemyHealth;
+        public JackEyeHP[] JackHP { get => _jackHP; set => _jackHP = value; }
+        internal JackEyeHP[] _jackHP;
         public InventoryEntry[] PlayerInventory { get; set; }
     }
 }

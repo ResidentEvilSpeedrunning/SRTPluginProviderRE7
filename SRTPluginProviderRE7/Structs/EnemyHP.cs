@@ -45,7 +45,7 @@ namespace SRTPluginProviderRE7.Structs
         internal float _currentHP;
         public bool IsPlayer => MaximumHP >= 1000f && MaximumHP <= 1400f;
         public bool IsTrigger => MaximumHP < 700f || MaximumHP >= 30000f;
-        public bool IsAlive => !IsPlayer && !IsTrigger && MaximumHP > 0 && CurrentHP > 1 && CurrentHP <= MaximumHP;
+        public bool IsAlive => !IsPlayer && !IsTrigger && MaximumHP > 0 && CurrentHP > 1 && CurrentHP <= MaximumHP && IsBoss;
         public float Percentage => ((IsAlive) ? CurrentHP / MaximumHP : 0f);
     }
 }

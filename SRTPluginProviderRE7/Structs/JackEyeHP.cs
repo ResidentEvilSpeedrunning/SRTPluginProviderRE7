@@ -37,7 +37,7 @@ namespace SRTPluginProviderRE7.Structs
         internal float _maximumHP;
         public float CurrentHP { get => _currentHP; set => _currentHP = value; }
         internal float _currentHP;
-        public bool IsAlive => CurrentHP > 0;
+        public bool IsAlive => CurrentHP > 0 && IsBoss;
         public float Percentage => ((IsAlive) ? CurrentHP / MaximumHP : 0f);
     }
 }

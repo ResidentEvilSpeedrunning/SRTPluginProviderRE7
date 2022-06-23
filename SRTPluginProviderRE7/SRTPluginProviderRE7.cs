@@ -12,11 +12,22 @@ namespace SRTPluginProviderRE7
     {
         private GameMemoryRE7Scanner gameMemoryScanner;
         private IPluginHostDelegates hostDelegates;
-
+        private GameVersion gameVersion;
         private Process? gameProcess;
         private Stopwatch stopwatch;
-        public bool GameRunning => !gameProcess.HasExited;
-
+        public bool GameRunning
+        {
+            get
+            {
+                if (gameMemoryScanner != null && !gameMemoryScanner.ProcessRunning)
+                {
+                    gameProcess = GetProcess();
+                    if (gameProcess != null)
+                        gameMemoryScanner.Initialize(gameProcess, gameVersion);
+                }
+                return gameMemoryScanner != null && gameMemoryScanner.ProcessRunning;
+            }
+        }
         public IPluginInfo Info => new PluginInfo();
 
         private static readonly byte[] re7steam_WW_20220614_1 = new byte[32] { 0x13, 0x8F, 0xDF, 0x58, 0x49, 0x37, 0x47, 0xDF, 0xB8, 0xA1, 0x82, 0x43, 0x25, 0x2B, 0x0F, 0x61, 0x58, 0x92, 0xC4, 0xD0, 0x10, 0xD9, 0x1C, 0x8E, 0x9E, 0xAF, 0x9B, 0x86, 0x38, 0xFA, 0x58, 0x02 };
@@ -31,8 +42,7 @@ namespace SRTPluginProviderRE7
                 if (!string.IsNullOrWhiteSpace(filePath))
                 {
                     // detect file version now that we have the path to the exe, whether it is via checksum or if it has 'WindowsApps' in its path.
-                    // e.g.
-                    GameVersion gameVersion;
+                    // e.g
 
                     if (filePath.Contains("WindowsApps"))
                         gameVersion = GameVersion.WINDOWS;
@@ -48,13 +58,16 @@ namespace SRTPluginProviderRE7
                             gameVersion = GameVersion.STEAM_December2021;
                     }
                     gameMemoryScanner = new GameMemoryRE7Scanner(gameProcess, gameVersion);
+                    stopwatch = new Stopwatch();
+                    stopwatch.Start();
                 }
-                stopwatch = new Stopwatch();
-                stopwatch.Start();
                 return 0;
-            }   
+            } 
             else
+            {
                 return 1;
+            }
+            
         }
 
         public int Shutdown()
@@ -80,7 +93,7 @@ namespace SRTPluginProviderRE7
                     stopwatch.Restart();
                 }
 
-                return gameMemoryScanner.Refresh();
+                return gameMemoryScanner.Refresh(gameVersion);
             }
             catch (Win32Exception ex)
             {
@@ -94,5 +107,6 @@ namespace SRTPluginProviderRE7
 
             return null;
         }
+        private Process GetProcess() => Process.GetProcessesByName("re7")?.FirstOrDefault();
     }
 }

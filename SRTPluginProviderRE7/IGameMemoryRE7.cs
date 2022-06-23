@@ -16,6 +16,7 @@ namespace SRTPluginProviderRE7
         int PlayerInventorySlots { get; set; }
         int PlayerCurrentSelectedInventorySlots { get; set; }        
         EnemyHP[] EnemyHealth { get; set; }
+        JackEyeHP[] JackHP { get; set; }
         InventoryEntry[] PlayerInventory { get; set; }
 
     }

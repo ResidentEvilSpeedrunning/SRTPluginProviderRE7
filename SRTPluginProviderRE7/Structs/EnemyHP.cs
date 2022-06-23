@@ -13,8 +13,7 @@ namespace SRTPluginProviderRE7.Structs
             { 4500, "Boss" },
             { 6000, "Boss" },
             { 10000, "Boss" },
-            { 15000, "Boss" },
-            { 30000, "Boss" }
+            { 15000, "Boss" }
         };
     }
 
@@ -45,8 +44,8 @@ namespace SRTPluginProviderRE7.Structs
         public float CurrentHP { get => _currentHP; set => _currentHP = value; }
         internal float _currentHP;
         public bool IsPlayer => MaximumHP >= 1000f && MaximumHP <= 1400f;
-        public bool IsTrigger => MaximumHP < 700f || MaximumHP > 30000f;
-        public bool IsAlive => !IsPlayer && !IsTrigger && MaximumHP > 0 && CurrentHP > 1 && CurrentHP < MaximumHP;
+        public bool IsTrigger => MaximumHP < 700f || MaximumHP >= 30000f;
+        public bool IsAlive => !IsPlayer && !IsTrigger && MaximumHP > 0 && CurrentHP > 1 && CurrentHP <= MaximumHP && IsBoss;
         public float Percentage => ((IsAlive) ? CurrentHP / MaximumHP : 0f);
     }
 }

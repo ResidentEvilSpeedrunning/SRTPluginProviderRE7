@@ -9,7 +9,7 @@ namespace SRTPluginProviderRE7
 
         public string Description => "A game memory provider plugin for Resident Evil 7 (Microsoft Store).";
 
-        public string Author => "VideoGameRoulette";
+        public string Author => "VideoGameRoulette, Mysterion_06_, TheDementedSalad";
 
         public Uri MoreInfoURL => new Uri("https://github.com/VideoGameRoulette");
 

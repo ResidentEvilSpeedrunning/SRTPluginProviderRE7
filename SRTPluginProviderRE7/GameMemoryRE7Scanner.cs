@@ -314,9 +314,6 @@ namespace SRTPluginProviderRE7
 
             for (int i = 0; i < PointerJackEyeHPs.Length; ++i)
                 PointerJackEyeHPs[i].UpdatePointers();
-
-            for(int i = 0; i < PointerJackEyeHPsMax.Length; ++i)
-                PointerJackEyeHPsMax[i].UpdatePointers();
         }
         internal IGameMemoryRE7 Refresh(GameVersion gv)
         {
@@ -402,7 +399,6 @@ namespace SRTPluginProviderRE7
                 } 
                 else
                 {
-                    gameMemoryValues.JackHP[i]._maximumHP = 0;
                     gameMemoryValues.JackHP[i]._currentHP = 0;
                 }
             }

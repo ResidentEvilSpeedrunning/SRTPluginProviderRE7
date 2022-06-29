@@ -14,7 +14,8 @@ namespace SRTPluginProviderRE7
         int Rank { get; }
         int PlayerInventoryCount { get; set; }
         int PlayerInventorySlots { get; set; }
-        int PlayerCurrentSelectedInventorySlots { get; set; }        
+        int PlayerCurrentSelectedInventorySlots { get; set; }
+        string RoomID { get; set; }
         EnemyHP[] EnemyHealth { get; set; }
         JackEyeHP[] JackHP { get; set; }
         InventoryEntry[] PlayerInventory { get; set; }

@@ -28,7 +28,7 @@ namespace SRTPluginProviderRE7
         private int pointerAddressItemCount;
         private int pointerAddressBagCount;
         private int pointerAddressJackEyeHP;
-        private int pointerAddressJackEyeHPMax;
+        private int pointerAddressRoomID;
 
         // Pointer Classes
         private IntPtr BaseAddress { get; set; }
@@ -37,9 +37,9 @@ namespace SRTPluginProviderRE7
         private MultilevelPointer PointerBagCount { get; set; }
         private MultilevelPointer PointerInventoryCount { get; set; }
         private MultilevelPointer PointerInventorySlotSelected { get; set; }
+        private MultilevelPointer PointerRoomID { get; set; }
         private MultilevelPointer[] PointerEnemyEntries { get; set; }
         private MultilevelPointer[] PointerJackEyeHPs { get; set; }
-        private MultilevelPointer[] PointerJackEyeHPsMax { get; set; }
         private MultilevelPointer[] PointerItemNames { get; set; }
         private MultilevelPointer[] PointerItemInfo { get; set; }
 
@@ -71,7 +71,7 @@ namespace SRTPluginProviderRE7
                     Console.WriteLine("This is steamversion december 2021");
                     PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
                     PointerHP = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressHP), 0x2C0, 0x38, 0x70);
-
+                    PointerRoomID = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x700);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressBagCount));
                     PointerInventoryCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressItemCount), 0x68, 0x28);
@@ -104,7 +104,7 @@ namespace SRTPluginProviderRE7
                     Console.WriteLine("This is steam version june 2022");
                     PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
                     PointerHP = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x70);
-
+                    PointerRoomID = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x960);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressBagCount));
                     PointerInventoryCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressItemCount), 0x68, 0x28);
@@ -137,7 +137,7 @@ namespace SRTPluginProviderRE7
                     Console.WriteLine("This is Windows");
                     PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
                     PointerHP = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressHP), 0x2C0, 0x38, 0x70);
-
+                    PointerRoomID = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x700);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressBagCount));
                     PointerInventoryCount = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressItemCount), 0x68, 0x28);
@@ -197,14 +197,6 @@ namespace SRTPluginProviderRE7
                     PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0x40, 0x30, 0xB8, 0x110, 0x90, 0x20, 0x30 + (i * 0x8));
                 }
             }
-            if (PointerJackEyeHPsMax == null)
-            {
-                PointerJackEyeHPsMax = new MultilevelPointer[MAX_JACKEYES];
-                for (int i = 0; i < MAX_JACKEYES; ++i)
-                {
-                    PointerJackEyeHPsMax[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHPMax), 0x180, 0x30, 0x30, 0x160, 0x90, 0x50, 0x30 + (i * 0x8));
-                }
-            }
         }
 
         private unsafe void GenerateJackEyesSteam()
@@ -215,14 +207,6 @@ namespace SRTPluginProviderRE7
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
                     PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0x7B8, 0x28, 0x320, 0x90, 0x58, 0x60 + (i * 0x8));
-                }
-            }
-            if (PointerJackEyeHPsMax == null)
-            {
-                PointerJackEyeHPsMax = new MultilevelPointer[MAX_JACKEYES];
-                for (int i = 0; i < MAX_JACKEYES; ++i)
-                {
-                    PointerJackEyeHPsMax[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHPMax), 0x180, 0x30, 0x30, 0x160, 0x90, 0x50, 0x30 + (i * 0x8));
                 }
             }
         }
@@ -281,7 +265,7 @@ namespace SRTPluginProviderRE7
                 pointerAddressEnemyHP = 0x081E9A98;
                 pointerAddressBagCount = 0x081EA150;
                 pointerAddressJackEyeHP = 0x093881A0;
-                pointerAddressJackEyeHPMax = 0x0935B1A0;
+                pointerAddressRoomID = 0x0934A600;
                 Console.WriteLine("Steam Version December 2021 Detected!");
             }
             else if(version == GameVersion.STEAM_June2022)
@@ -293,7 +277,7 @@ namespace SRTPluginProviderRE7
                 pointerAddressEnemyHP = 0x08F8BE68;
                 pointerAddressBagCount = 0x081EA150;
                 pointerAddressJackEyeHP = 0x08FBA528;
-                pointerAddressJackEyeHPMax = 0x0935B1A0;
+                pointerAddressRoomID = 0x08F7DE00;
                 Console.WriteLine("Steam Version June 2022 Detected!");
             }
             else if (version == GameVersion.WINDOWS){
@@ -304,7 +288,7 @@ namespace SRTPluginProviderRE7
                 pointerAddressEnemyHP = 0x0934A598;
                 pointerAddressBagCount = 0x09373DB8;
                 pointerAddressJackEyeHP = 0x093881A0;
-                pointerAddressJackEyeHPMax = 0x0935B1A0;
+                pointerAddressRoomID = 0x0934A600;
                 Console.WriteLine("Microsoft Store Version Detected!");
             } 
             else
@@ -324,31 +308,38 @@ namespace SRTPluginProviderRE7
             PointerBagCount.UpdatePointers();
             PointerInventoryCount.UpdatePointers();
             PointerInventorySlotSelected.UpdatePointers();
+            PointerRoomID.UpdatePointers();
             for (int i = 0; i < PointerEnemyEntries.Length; ++i)
                 PointerEnemyEntries[i].UpdatePointers();
 
             for (int i = 0; i < PointerJackEyeHPs.Length; ++i)
                 PointerJackEyeHPs[i].UpdatePointers();
-
-            for(int i = 0; i < PointerJackEyeHPsMax.Length; ++i)
-                PointerJackEyeHPsMax[i].UpdatePointers();
         }
-        internal IGameMemoryRE7 Refresh()
+        internal IGameMemoryRE7 Refresh(GameVersion gv)
         {
-            GetEnemiesSteam();
-            GetJackEyesSteam();
-            gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x10);
-            GetEnemiesWindows();
-            GetJackEyesWindows();
-            gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x20);
+            if (gv == GameVersion.STEAM_June2022)
+            {
+                GetEnemiesSteam();
+                GetJackEyesSteam();
+                gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x10);
+            }
+            else if (gv == GameVersion.WINDOWS || gv == GameVersion.STEAM_December2021)
+            {
+                GetEnemiesWindows();
+                GetJackEyesWindows();
+                gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x20);
+            } 
+            else
+            {
+                Console.WriteLine("No Version was recognized");
+            }
+            gameMemoryValues._roomID = PointerRoomID.DerefUnicodeString(0x0, 30);
             gameMemoryValues._rankScore = PointerDA.DerefFloat(0xF8);
             GetBagCount();
             gameMemoryValues._playerInventoryCount = PointerInventoryCount.DerefInt(0x28);
             GetSelectedIndex();
             GetItems();
             HasScanned = true;
-
-
             return gameMemoryValues;
         }
 
@@ -402,15 +393,12 @@ namespace SRTPluginProviderRE7
         {
             for(int i = 0; i < gameMemoryValues.JackHP.Length; ++i)
             {
-                if(PointerJackEyeHPs[i].Address != IntPtr.Zero && PointerJackEyeHPsMax[i].Address != IntPtr.Zero)
+                if(PointerJackEyeHPs[i].Address != IntPtr.Zero)
                 {
-                    GamePlayer jackHP = PointerJackEyeHPs[i].Deref<GamePlayer>(0x10);
-                    gameMemoryValues.JackHP[i]._maximumHP = PointerJackEyeHPsMax[i].DerefFloat(0x10);
                     gameMemoryValues.JackHP[i]._currentHP = PointerJackEyeHPs[i].DerefFloat(0x10);
                 } 
                 else
                 {
-                    gameMemoryValues.JackHP[i]._maximumHP = 0;
                     gameMemoryValues.JackHP[i]._currentHP = 0;
                 }
             }
@@ -419,15 +407,12 @@ namespace SRTPluginProviderRE7
         {
             for (int i = 0; i < gameMemoryValues.JackHP.Length; ++i)
             {
-                if (PointerJackEyeHPs[i].Address != IntPtr.Zero && PointerJackEyeHPsMax[i].Address != IntPtr.Zero)
+                if (PointerJackEyeHPs[i].Address != IntPtr.Zero)
                 {
-                    GamePlayer jackHP = PointerJackEyeHPs[i].Deref<GamePlayer>(0x20);
-                    gameMemoryValues.JackHP[i]._maximumHP = PointerJackEyeHPsMax[i].DerefFloat(0x20);
                     gameMemoryValues.JackHP[i]._currentHP = PointerJackEyeHPs[i].DerefFloat(0x20);
                 }
                 else
                 {
-                    gameMemoryValues.JackHP[i]._maximumHP = 0;
                     gameMemoryValues.JackHP[i]._currentHP = 0;
                 }
             }

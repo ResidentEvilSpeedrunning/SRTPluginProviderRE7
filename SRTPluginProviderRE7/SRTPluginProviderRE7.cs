@@ -65,7 +65,7 @@ namespace SRTPluginProviderRE7
             } 
             else
             {
-                return 1;
+                return 0;
             }
             
         }

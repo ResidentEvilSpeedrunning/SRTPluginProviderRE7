@@ -206,7 +206,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0x7B8, 0x28, 0x320, 0x90, 0x58, 0x60 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0x7B8, 0x28, 0x18, 0x728, 0x90, 0x48, 0xA0 + (i * 0x8));
                 }
             }
         }

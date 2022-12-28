@@ -15,7 +15,7 @@ namespace SRTPluginProviderRE7.Structs
             get
             {
                 if (IsAlive)
-                    return string.Format("Enemy {0} / {1} ({2:P1})", CurrentHP);
+                    return string.Format("Enemy {0}", CurrentHP);
                 else
                     return "DEAD / DEAD (0%)";
             }

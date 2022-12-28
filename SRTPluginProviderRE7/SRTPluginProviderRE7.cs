@@ -31,6 +31,7 @@ namespace SRTPluginProviderRE7
         public IPluginInfo Info => new PluginInfo();
 
         private static readonly byte[] re7steam_WW_20220614_1 = new byte[32] { 0x13, 0x8F, 0xDF, 0x58, 0x49, 0x37, 0x47, 0xDF, 0xB8, 0xA1, 0x82, 0x43, 0x25, 0x2B, 0x0F, 0x61, 0x58, 0x92, 0xC4, 0xD0, 0x10, 0xD9, 0x1C, 0x8E, 0x9E, 0xAF, 0x9B, 0x86, 0x38, 0xFA, 0x58, 0x02 };
+        private static readonly byte[] re7steam_ww_20211217_1 = new byte[32] { 0xB4, 0xF6, 0x58, 0x5F, 0xC0, 0xB6, 0xD0, 0x67, 0x74, 0x59, 0xB1, 0x6C, 0x75, 0xD6, 0x6B, 0x3E, 0x85, 0xAD, 0x23, 0x93, 0x87, 0xCC, 0x89, 0xD1, 0x08, 0xC0, 0xCA, 0x77, 0x93, 0x29, 0x6E, 0xCD };
 
         public int Startup(IPluginHostDelegates hostDelegates)
         {
@@ -54,8 +55,10 @@ namespace SRTPluginProviderRE7
                             checksum = hashFunc.ComputeHash(fs);
                         if (checksum.SequenceEqual(re7steam_WW_20220614_1))
                             gameVersion = GameVersion.STEAM_June2022;
-                        else
+                        else if (checksum.SequenceEqual(re7steam_ww_20211217_1))
                             gameVersion = GameVersion.STEAM_December2021;
+                        else
+                            gameVersion = GameVersion.STEAM_October2022;
                     }
                     gameMemoryScanner = new GameMemoryRE7Scanner(gameProcess, gameVersion);
                     stopwatch = new Stopwatch();

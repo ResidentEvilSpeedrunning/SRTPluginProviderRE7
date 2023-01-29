@@ -16,6 +16,7 @@ namespace SRTPluginProviderRE7
         // Variables
         private ProcessMemoryHandler memoryAccess;
         private GameMemoryRE7 gameMemoryValues;
+        private GameVersion gameVersion;
         public bool HasScanned;
         public bool ProcessRunning => memoryAccess != null && memoryAccess.ProcessRunning;
         public int ProcessExitCode => (memoryAccess != null) ? memoryAccess.ProcessExitCode : 0;
@@ -47,18 +48,20 @@ namespace SRTPluginProviderRE7
         /// 
         /// </summary>
         /// <param name="proc"></param>
-        internal GameMemoryRE7Scanner(Process process, GameVersion gv)
+        internal GameMemoryRE7Scanner(Process process)
         {
             gameMemoryValues = new GameMemoryRE7();
             if (process != null)
-                Initialize(process, gv);
+                Initialize(process);
         }
 
-        internal void Initialize(Process process, GameVersion gv)
+        internal void Initialize(Process process)
         {
             if (process == null)
                 return;
-            SelectPointerAddresses(GameHashes.DetectVersion(process.MainModule.FileName));
+
+            gameVersion = GameHashes.DetectVersion(process.MainModule.FileName);
+            SelectPointerAddresses(gameVersion);
 
             int pid = GetProcessId(process).Value;
             memoryAccess = new ProcessMemoryHandler(pid);
@@ -66,7 +69,7 @@ namespace SRTPluginProviderRE7
             if (ProcessRunning)
             {
                 BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, PInvoke.ListModules.LIST_MODULES_64BIT); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn'
-                if (gv == GameVersion.STEAM_December2021)
+                if (gameVersion == GameVersion.STEAM_December2021)
                 {
                     Console.WriteLine("This is steamversion december 2021");
                     PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
@@ -99,7 +102,7 @@ namespace SRTPluginProviderRE7
                         gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
                     }
                 }
-                else if(gv == GameVersion.STEAM_June2022)
+                else if (gameVersion == GameVersion.STEAM_June2022)
                 {
                     Console.WriteLine("This is steam version june 2022");
                     PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
@@ -131,8 +134,8 @@ namespace SRTPluginProviderRE7
                     {
                         gameMemoryValues.PlayerInventory[i] = new InventoryEntry();
                     }
-                } 
-                else if(gv == GameVersion.STEAM_October2022)
+                }
+                else if (gameVersion == GameVersion.STEAM_October2022)
                 {
                     Console.WriteLine("This is steam version october 2022");
                     PointerDA = new MultilevelPointer(memoryAccess, IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
@@ -323,7 +326,7 @@ namespace SRTPluginProviderRE7
                 pointerAddressRoomID = 0x0934A600;
                 Console.WriteLine("Steam Version December 2021 Detected!");
             }
-            else if(version == GameVersion.STEAM_June2022)
+            else if (version == GameVersion.STEAM_June2022)
             {
                 pointerAddressDifficultyAdjustment = 0x08FC42F8;
                 pointerAddressSelectedSlot = 0x081F2620;
@@ -335,7 +338,7 @@ namespace SRTPluginProviderRE7
                 pointerAddressRoomID = 0x08F7DE00;
                 Console.WriteLine("Steam Version June 2022 Detected!");
             }
-            else if(version == GameVersion.STEAM_October2022)
+            else if (version == GameVersion.STEAM_October2022)
             {
                 pointerAddressDifficultyAdjustment = 0x8FC4478;
                 pointerAddressSelectedSlot = 0x081F2620;
@@ -347,7 +350,8 @@ namespace SRTPluginProviderRE7
                 pointerAddressRoomID = 0x08F7DF80;
                 Console.WriteLine("Steam Version October 2022 Detected!");
             }
-            else if (version == GameVersion.WINDOWS){
+            else if (version == GameVersion.WINDOWS)
+            {
                 pointerAddressDifficultyAdjustment = 0x09384AB8;
                 pointerAddressSelectedSlot = 0x09336170;
                 pointerAddressItemCount = 0x093352C0;
@@ -357,7 +361,7 @@ namespace SRTPluginProviderRE7
                 pointerAddressJackEyeHP = 0x093881A0;
                 pointerAddressRoomID = 0x0934A600;
                 Console.WriteLine("Microsoft Store Version Detected!");
-            } 
+            }
             else
             {
                 Console.WriteLine("Warning Unknown Version Will Not Work!");
@@ -382,20 +386,20 @@ namespace SRTPluginProviderRE7
             for (int i = 0; i < PointerJackEyeHPs.Length; ++i)
                 PointerJackEyeHPs[i].UpdatePointers();
         }
-        internal IGameMemoryRE7 Refresh(GameVersion gv)
+        internal IGameMemoryRE7 Refresh()
         {
-            if (gv == GameVersion.STEAM_June2022 || gv == GameVersion.STEAM_October2022)
+            if (gameVersion == GameVersion.STEAM_June2022 || gameVersion == GameVersion.STEAM_October2022)
             {
                 GetEnemiesSteam();
                 GetJackEyesSteam();
                 gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x10);
             }
-            else if (gv == GameVersion.WINDOWS || gv == GameVersion.STEAM_December2021)
+            else if (gameVersion == GameVersion.WINDOWS || gameVersion == GameVersion.STEAM_December2021)
             {
                 GetEnemiesWindows();
                 GetJackEyesWindows();
                 gameMemoryValues._player = PointerHP.Deref<GamePlayer>(0x20);
-            } 
+            }
             else
             {
                 Console.WriteLine("No Version was recognized");
@@ -458,12 +462,12 @@ namespace SRTPluginProviderRE7
 
         private void GetJackEyesSteam()
         {
-            for(int i = 0; i < gameMemoryValues.JackHP.Length; ++i)
+            for (int i = 0; i < gameMemoryValues.JackHP.Length; ++i)
             {
-                if(PointerJackEyeHPs[i].Address != IntPtr.Zero)
+                if (PointerJackEyeHPs[i].Address != IntPtr.Zero)
                 {
                     gameMemoryValues.JackHP[i]._currentHP = PointerJackEyeHPs[i].DerefFloat(0x10);
-                } 
+                }
                 else
                 {
                     gameMemoryValues.JackHP[i]._currentHP = 0;
@@ -534,6 +538,6 @@ namespace SRTPluginProviderRE7
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
-#endregion
+        #endregion
     }
 }

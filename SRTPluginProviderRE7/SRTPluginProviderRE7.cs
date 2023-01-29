@@ -3,8 +3,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.IO;
-using System.Security.Cryptography;
 
 namespace SRTPluginProviderRE7
 {
@@ -12,7 +10,6 @@ namespace SRTPluginProviderRE7
     {
         private GameMemoryRE7Scanner gameMemoryScanner;
         private IPluginHostDelegates hostDelegates;
-        private GameVersion gameVersion;
         private Process? gameProcess;
         private Stopwatch stopwatch;
         public bool GameRunning
@@ -23,7 +20,7 @@ namespace SRTPluginProviderRE7
                 {
                     gameProcess = GetProcess();
                     if (gameProcess != null)
-                        gameMemoryScanner.Initialize(gameProcess, gameVersion);
+                        gameMemoryScanner.Initialize(gameProcess);
                 }
                 return gameMemoryScanner != null && gameMemoryScanner.ProcessRunning;
             }
@@ -39,38 +36,22 @@ namespace SRTPluginProviderRE7
             gameProcess = Process.GetProcessesByName("re7").FirstOrDefault();
             if (gameProcess != default)
             {
+                Console.WriteLine($"Game process found: {gameProcess.ProcessName} (PID: {gameProcess.Id})");
                 string? filePath = gameProcess?.MainModule?.FileName;
                 if (!string.IsNullOrWhiteSpace(filePath))
                 {
-                    // detect file version now that we have the path to the exe, whether it is via checksum or if it has 'WindowsApps' in its path.
-                    // e.g
-
-                    if (filePath.Contains("WindowsApps"))
-                        gameVersion = GameVersion.WINDOWS;
-                    else
-                    {
-                        byte[] checksum;
-                        using (SHA256 hashFunc = SHA256.Create())
-                        using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-                            checksum = hashFunc.ComputeHash(fs);
-                        if (checksum.SequenceEqual(re7steam_WW_20220614_1))
-                            gameVersion = GameVersion.STEAM_June2022;
-                        else if (checksum.SequenceEqual(re7steam_ww_20211217_1))
-                            gameVersion = GameVersion.STEAM_December2021;
-                        else
-                            gameVersion = GameVersion.STEAM_October2022;
-                    }
-                    gameMemoryScanner = new GameMemoryRE7Scanner(gameProcess, gameVersion);
+                    Console.WriteLine($"Game located at \"{filePath}\"");
+                    gameMemoryScanner = new GameMemoryRE7Scanner(gameProcess);
                     stopwatch = new Stopwatch();
                     stopwatch.Start();
                 }
                 return 0;
-            } 
+            }
             else
             {
                 return 0;
             }
-            
+
         }
 
         public int Shutdown()
@@ -96,7 +77,7 @@ namespace SRTPluginProviderRE7
                     stopwatch.Restart();
                 }
 
-                return gameMemoryScanner.Refresh(gameVersion);
+                return gameMemoryScanner.Refresh();
             }
             catch (Win32Exception ex)
             {

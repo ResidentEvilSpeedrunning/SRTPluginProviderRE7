@@ -3,7 +3,6 @@ using System;
 using System.Diagnostics;
 using SRTPluginProviderRE7.Structs;
 using SRTPluginProviderRE7.Structs.GameStructs;
-using Windows.Win32.System.ProcessStatus;
 
 namespace SRTPluginProviderRE7
 {
@@ -66,14 +65,13 @@ namespace SRTPluginProviderRE7
 
             if (ProcessRunning)
             {
-                //BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, ENUM_PROCESS_MODULES_EX_FLAGS.LIST_MODULES_64BIT); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn'
+                //BaseAddress = NativeWrappers.GetProcessBaseAddress(pid, PInvoke.ListModules.LIST_MODULES_64BIT); // Bypass .NET's managed solution for getting this and attempt to get this info ourselves via PInvoke since some users are getting 299 PARTIAL COPY when they seemingly shouldn'
                 BaseAddress = process?.MainModule?.BaseAddress ?? IntPtr.Zero;
-                Console.WriteLine($"Game Base Address: {BaseAddress.ToInt64()}");
                 if (gv == GameVersion.STEAM_December2021)
                 {
                     Console.WriteLine("This is steamversion december 2021");
                     PointerDA = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
-                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x58, 0x68, 0x70);
+                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x68, 0x68, 0x70);
                     PointerRoomID = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x700);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressBagCount));
@@ -106,7 +104,7 @@ namespace SRTPluginProviderRE7
                 {
                     Console.WriteLine("This is steam version june 2022");
                     PointerDA = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
-                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x68, 0x68, 0x70);
+                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x58, 0x68, 0x70);
                     PointerRoomID = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x960);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressBagCount));
@@ -139,7 +137,7 @@ namespace SRTPluginProviderRE7
                 {
                     Console.WriteLine("This is steam version october 2022");
                     PointerDA = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
-                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x68, 0x68, 0x70);
+                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x58, 0x68, 0x70);
                     PointerRoomID = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x960);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressBagCount));
@@ -205,7 +203,7 @@ namespace SRTPluginProviderRE7
                 {
                     Console.WriteLine("This is steam version DX 12 Update September 2023");
                     PointerDA = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
-                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x68, 0x68, 0x70);
+                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x58, 0x68, 0x70);
                     PointerRoomID = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x960);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressBagCount));
@@ -238,7 +236,7 @@ namespace SRTPluginProviderRE7
                 {
                     Console.WriteLine("This is Windows");
                     PointerDA = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressDifficultyAdjustment));
-                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x58, 0x68, 0x70);
+                    PointerHP = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressHP), 0xE8, 0x68, 0x68, 0x70);
                     PointerRoomID = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressRoomID), 0x700);
 
                     PointerBagCount = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressBagCount));
@@ -269,42 +267,9 @@ namespace SRTPluginProviderRE7
                 }
             }
         }
+
+        //Enemy HP CeroD
         private unsafe void GenerateEnemyEntriesWindows()
-        {
-            if (PointerEnemyEntries == null)
-            {
-                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
-                for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x190, 0x490, 0x20, 0x8 + (i * 0x8), 0x58, 0x70);
-            }
-
-        }
-        private unsafe void GenerateEnemyEntriesSteam()
-        {
-            if (PointerEnemyEntries == null)
-            {
-                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
-                for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x40 + (i * 0x8), 0x58, 0x70);
-            }
-
-        }
-        // This is a comment.
-        /*
-         Multi-line
-         */
-        private unsafe void GenerateEnemyEntriesSteamOctober2022()
-        {
-            if (PointerEnemyEntries == null)
-            {
-                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
-                for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
-            }
-
-        }
-
-        private unsafe void GenerateEnemyEntriesSteamDX11EOL()
         {
             if (PointerEnemyEntries == null)
             {
@@ -315,17 +280,7 @@ namespace SRTPluginProviderRE7
 
         }
 
-        private unsafe void GenerateEnemyEntriesSteamDX12_09_05_2023()
-        {
-            if (PointerEnemyEntries == null)
-            {
-                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
-                for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
-            }
-
-        }
-
+        //DX11 2021
         private unsafe void GenerateEnemyEntriesDX11()
         {
             if (PointerEnemyEntries == null)
@@ -337,6 +292,55 @@ namespace SRTPluginProviderRE7
 
         }
 
+        //DX11 EOL
+        private unsafe void GenerateEnemyEntriesSteamDX11EOL()
+        {
+            if (PointerEnemyEntries == null)
+            {
+                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
+                for (int i = 0; i < MAX_ENTITIES; ++i)
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x20, 0x30 + (i * 0x8), 0x28, 0x68, 0x70);
+            }
+
+        }
+
+        //Original DX12 Update
+        private unsafe void GenerateEnemyEntriesSteam()
+        {
+            if (PointerEnemyEntries == null)
+            {
+                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
+                for (int i = 0; i < MAX_ENTITIES; ++i)
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x20 + (i * 0x8), 0x18, 0x68, 0x70);
+            }
+
+        }
+
+        //DX12 Oct 2022
+        private unsafe void GenerateEnemyEntriesSteamOctober2022()
+        {
+            if (PointerEnemyEntries == null)
+            {
+                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
+                for (int i = 0; i < MAX_ENTITIES; ++i)
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x20 + (i * 0x8), 0x18, 0x68, 0x70);
+            }
+
+        }
+
+        //DX12 May 2023
+        private unsafe void GenerateEnemyEntriesSteamDX12_09_05_2023()
+        {
+            if (PointerEnemyEntries == null)
+            {
+                PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
+                for (int i = 0; i < MAX_ENTITIES; ++i)
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x20 + (i * 0x8), 0x18, 0x68, 0x70);
+            }
+
+        }
+
+        //Jack Eye HP CeroD
         private unsafe void GenerateJackEyesWindows()
         {
             if (PointerJackEyeHPs == null)
@@ -349,54 +353,7 @@ namespace SRTPluginProviderRE7
             }
         }
 
-        private unsafe void GenerateJackEyesSteam()
-        {
-            if (PointerJackEyeHPs == null)
-            {
-                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
-                for (int i = 0; i < MAX_JACKEYES; ++i)
-                {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
-                }
-            }
-        }
-
-        private unsafe void GenerateJackEyesSteamOctober2022()
-        {
-            if (PointerJackEyeHPs == null)
-            {
-                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
-                for (int i = 0; i < MAX_JACKEYES; ++i)
-                {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
-                }
-            }
-        }
-
-        private unsafe void GenerateJackEyesSteamDX11EOL()
-        {
-            if (PointerJackEyeHPs == null)
-            {
-                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
-                for (int i = 0; i < MAX_JACKEYES; ++i)
-                {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8));
-                }
-            }
-        }
-
-        private unsafe void GenerateJackEyesSteamDX12_09_05_2023()
-        {
-            if (PointerJackEyeHPs == null)
-            {
-                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
-                for (int i = 0; i < MAX_JACKEYES; ++i)
-                {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
-                }
-            }
-        }
-
+        //DX11 2021
         private unsafe void GenerateJackEyesDX11()
         {
             if (PointerJackEyeHPs == null)
@@ -409,13 +366,65 @@ namespace SRTPluginProviderRE7
             }
         }
 
+        //DX11 EOL
+        private unsafe void GenerateJackEyesSteamDX11EOL()
+        {
+            if (PointerJackEyeHPs == null)
+            {
+                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
+                for (int i = 0; i < MAX_JACKEYES; ++i)
+                {
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8));
+                }
+            }
+        }
+
+        //Original DX12 Update
+        private unsafe void GenerateJackEyesSteam()
+        {
+            if (PointerJackEyeHPs == null)
+            {
+                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
+                for (int i = 0; i < MAX_JACKEYES; ++i)
+                {
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
+                }
+            }
+        }
+
+        //DX12 Oct 2022
+        private unsafe void GenerateJackEyesSteamOctober2022()
+        {
+            if (PointerJackEyeHPs == null)
+            {
+                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
+                for (int i = 0; i < MAX_JACKEYES; ++i)
+                {
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
+                }
+            }
+        }
+
+        //DX12 May 2023
+        private unsafe void GenerateJackEyesSteamDX12_09_05_2023()
+        {
+            if (PointerJackEyeHPs == null)
+            {
+                PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
+                for (int i = 0; i < MAX_JACKEYES; ++i)
+                {
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
+                }
+            }
+        }
+
         private unsafe void GetItems()
         {
             if (gameMemoryValues.PlayerInventoryCount != 0)
             {
-                for (var i = 0; i < gameMemoryValues.PlayerInventoryCount; i++)
+                for (int i = 0; i < gameMemoryValues.PlayerInventoryCount; i++)
                 {
-                    nint position = (nint)(0x30L + (0x8L * i));
+                    nint position = 0x30 + (0x8 * i);
                     PointerItemNames[i] = new MultilevelPointer(memoryAccess, (nint*)(BaseAddress + pointerAddressItemCount), 0x60, 0x20, position, 0x28, 0x80);
                     PointerItemInfo[i] = new MultilevelPointer(memoryAccess, (nint*)(BaseAddress + pointerAddressItemCount), 0x60, 0x20, position, 0x28);
                 }

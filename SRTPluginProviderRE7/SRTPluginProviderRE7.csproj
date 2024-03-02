@@ -5,25 +5,19 @@
     <TargetFramework>net5.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Platforms>x64</Platforms>
-    <Authors>Christopher Couture</Authors>
-    <Company>VideoGameRoulette</Company>
-    <Copyright>Copyright © 2020 Christopher Couture</Copyright>
+	<Company>SpeedRunTooling</Company>
+	<Authors>$(Company)</Authors>
+    <Copyright>Copyright © 2024 $(Company)</Copyright>
     <Product>Resident Evil 7 Memory Provider Plugin</Product>
     <Description>A provider plugin for the SRT Host to provide memory values to other plugins.</Description>
-    <Version>1.0.1.0</Version>
-    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.2.0</Version>
+    <FileVersion>1.0.2.0</FileVersion>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <!-- netcoreapp3.1 had to be hardcoded here because this project reports $(TargetFramework) as netstandard2.0 (rightfully so) and I am not sure how this project's csproj can auto-detect another project's framework version to copy it to the appropriate folder so we're just... hardcoding this. -->
-    <CopyDestionationPath>$(SolutionDir)..\..\Squirrelies\SRTHost\SRTHost\bin\$(Configuration)\net5.0-windows\plugins</CopyDestionationPath>
+    <CopyDestionationPath>$(SolutionDir)..\..\SpeedRunTool\SRTHost\SRTHost\bin\$(Configuration)\net5.0-windows\plugins</CopyDestionationPath>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
-	
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
 
   <Target Name="CopyOutputToDestination" AfterTargets="AfterBuild">
     <ItemGroup>
@@ -34,8 +28,11 @@
   </Target>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Squirrelies\ProcessMemory\ProcessMemory\ProcessMemory.csproj" />
-    <ProjectReference Include="..\..\..\Squirrelies\SRTHost\SRTPluginBase\SRTPluginBase.csproj">
+    <PackageReference Include="ProcessMemory64" Version="4.0.*-*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SpeedRunTool\SRTHost\SRTPluginBase\SRTPluginBase.csproj">
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>

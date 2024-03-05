@@ -275,7 +275,7 @@ namespace SRTPluginProviderRE7
             {
                 PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
                 for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x20, 0x30 + (i * 0x8), 0x28, 0x68, 0x70);
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x60, 0x70, 0x20, 0x0 + (i * 0x8), 0x70);
             }
 
         }
@@ -287,7 +287,7 @@ namespace SRTPluginProviderRE7
             {
                 PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
                 for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x20, 0x30 + (i * 0x8), 0x28, 0x68, 0x70);
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x60, 0x70, 0x20, 0x0 + (i * 0x8), 0x70);
             }
 
         }
@@ -299,7 +299,7 @@ namespace SRTPluginProviderRE7
             {
                 PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
                 for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x20, 0x30 + (i * 0x8), 0x28, 0x68, 0x70);
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x60, 0x70, 0x20, 0x0 + (i * 0x8), 0x70);
             }
 
         }
@@ -311,7 +311,7 @@ namespace SRTPluginProviderRE7
             {
                 PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
                 for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x20 + (i * 0x8), 0x18, 0x68, 0x70);
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x78, 0x640, 0x10, 0x0 + (i * 0x8), 0x70);
             }
 
         }
@@ -323,7 +323,7 @@ namespace SRTPluginProviderRE7
             {
                 PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
                 for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x20 + (i * 0x8), 0x18, 0x68, 0x70);
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x78, 0x640, 0x10, 0x0 + (i * 0x8), 0x70);
             }
 
         }
@@ -335,7 +335,7 @@ namespace SRTPluginProviderRE7
             {
                 PointerEnemyEntries = new MultilevelPointer[MAX_ENTITIES];
                 for (int i = 0; i < MAX_ENTITIES; ++i)
-                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0xB8, 0x10, 0x20 + (i * 0x8), 0x18, 0x68, 0x70);
+                    PointerEnemyEntries[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressEnemyHP), 0x78, 0x640, 0x10, 0x0 + (i * 0x8), 0x70);
             }
 
         }
@@ -387,7 +387,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8));
                 }
             }
         }
@@ -400,7 +400,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8));
                 }
             }
         }
@@ -413,7 +413,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x30 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8));
                 }
             }
         }
@@ -463,17 +463,41 @@ namespace SRTPluginProviderRE7
 
         private void SelectPointerAddresses(GameVersion version)
         {
-            if (version == GameVersion.STEAM_December2021)
+            if (version == GameVersion.WINDOWS)
+            {
+                pointerAddressDifficultyAdjustment = 0x09387430;
+                pointerAddressSelectedSlot = 0x0;
+                pointerAddressItemCount = 0x0;
+                pointerAddressHP = 0x934D678;
+                pointerAddressEnemyHP = 0x934CDF8;
+                pointerAddressBagCount = 0x0;
+                pointerAddressJackEyeHP = 0x934D678;
+                pointerAddressRoomID = 0x0934CCA0;
+                Console.WriteLine("Microsoft Store Version Detected!");
+            }
+            else if (version == GameVersion.STEAM_December2021)
             {
                 pointerAddressDifficultyAdjustment = 0x081FA818;
                 pointerAddressSelectedSlot = 0x081F2620;
                 pointerAddressItemCount = 0x081F1308;
                 pointerAddressHP = 0x822BE48;
-                pointerAddressEnemyHP = 0x822BE48;
+                pointerAddressEnemyHP = 0x81E9C58;
                 pointerAddressBagCount = 0x081EA150;
                 pointerAddressJackEyeHP = 0x822BE48;
                 pointerAddressRoomID = 0x0934A600;
                 Console.WriteLine("Steam Version December 2021 Detected!");
+            }
+            else if (version == GameVersion.STEAM_DX11_EOL)
+            {
+                pointerAddressDifficultyAdjustment = 0x8207330;
+                pointerAddressSelectedSlot = 0x0;
+                pointerAddressItemCount = 0x0;
+                pointerAddressHP = 0x8238CF0;
+                pointerAddressEnemyHP = 0x81F7370;
+                pointerAddressBagCount = 0x0;
+                pointerAddressJackEyeHP = 0x8238CF0;
+                pointerAddressRoomID = 0x081F7218;
+                Console.WriteLine("Steam Version DX11 End of Life Detected!");
             }
             else if (version == GameVersion.STEAM_June2022)
             {
@@ -481,7 +505,7 @@ namespace SRTPluginProviderRE7
                 pointerAddressSelectedSlot = 0x081F2620;
                 pointerAddressItemCount = 0x081F1308;
                 pointerAddressHP = 0x8F86B30;
-                pointerAddressEnemyHP = 0x8F86B30;
+                pointerAddressEnemyHP = 0x8F7E0E0;
                 pointerAddressBagCount = 0x081EA150;
                 pointerAddressJackEyeHP = 0x8F86B30;
                 pointerAddressRoomID = 0x08F7DE00;
@@ -493,23 +517,11 @@ namespace SRTPluginProviderRE7
                 pointerAddressSelectedSlot = 0x081F2620;
                 pointerAddressItemCount = 0x081F1308;
                 pointerAddressHP = 0x8F86CB0;
-                pointerAddressEnemyHP = 0x8F86CB0;
+                pointerAddressEnemyHP = 0x8F7E260;
                 pointerAddressBagCount = 0x081EA150;
                 pointerAddressJackEyeHP = 0x8F86CB0;
                 pointerAddressRoomID = 0x08F7DF80;
                 Console.WriteLine("Steam Version October 2022 Detected!");
-            }
-            else if (version == GameVersion.STEAM_DX11_EOL)
-            {
-                pointerAddressDifficultyAdjustment = 0x8207330;
-                pointerAddressSelectedSlot = 0x0;
-                pointerAddressItemCount = 0x0;
-                pointerAddressHP = 0x8238CF0;
-                pointerAddressEnemyHP = 0x8238CF0;
-                pointerAddressBagCount = 0x0;
-                pointerAddressJackEyeHP = 0x8238CF0;
-                pointerAddressRoomID = 0x081F7218;
-                Console.WriteLine("Steam Version DX11 End of Life Detected!");
             }
             else if (version == GameVersion.STEAM_DX12_09_05_2023)
             {
@@ -517,23 +529,11 @@ namespace SRTPluginProviderRE7
                 pointerAddressSelectedSlot = 0x0;
                 pointerAddressItemCount = 0x0;
                 pointerAddressHP = 0x8FB4BE0;
-                pointerAddressEnemyHP = 0x8FB4BE0;
+                pointerAddressEnemyHP = 0x8FAC390;
                 pointerAddressBagCount = 0x0;
                 pointerAddressJackEyeHP = 0x8FB4BE0;
                 pointerAddressRoomID = 0x8FAC0B0;
                 Console.WriteLine("Steam Version DX12 Detected!");
-            }
-            else if (version == GameVersion.WINDOWS)
-            {
-                pointerAddressDifficultyAdjustment = 0x09387430;
-                pointerAddressSelectedSlot = 0x0;
-                pointerAddressItemCount = 0x0;
-                pointerAddressHP = 0x934D678;
-                pointerAddressEnemyHP = 0x934D678;
-                pointerAddressBagCount = 0x0;
-                pointerAddressJackEyeHP = 0x934D678;
-                pointerAddressRoomID = 0x0934CCA0;
-                Console.WriteLine("Microsoft Store Version Detected!");
             }
             else
             {

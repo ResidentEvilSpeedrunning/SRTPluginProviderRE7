@@ -8,12 +8,14 @@ namespace SRTPluginProviderRE7.Structs
         public static Dictionary<float, string> Bosses = new Dictionary<float, string>()
         {
             { 700, "Boss" },
-            { 1500, "Boss" },
             { 2000, "Boss" },
+            { 2300, "Boss" },
             { 4500, "Boss" },
             { 6000, "Boss" },
             { 10000, "Boss" },
-            { 15000, "Boss" }
+            { 15000, "Boss" },
+            { 28000, "Boss" },
+            { 50000, "Boss" }
         };
     }
 

@@ -348,7 +348,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8), 0x20);
                 }
             }
         }
@@ -361,7 +361,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8), 0x20);
                 }
             }
         }
@@ -374,7 +374,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x20, 0x40, 0x30, 0x328, 0x90, 0x20, 0x30 + (i * 0x8), 0x20);
                 }
             }
         }
@@ -387,7 +387,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8), 0x10);
                 }
             }
         }
@@ -400,7 +400,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8), 0x10);
                 }
             }
         }
@@ -413,7 +413,7 @@ namespace SRTPluginProviderRE7
                 PointerJackEyeHPs = new MultilevelPointer[MAX_JACKEYES];
                 for (int i = 0; i < MAX_JACKEYES; ++i)
                 {
-                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8));
+                    PointerJackEyeHPs[i] = new MultilevelPointer(memoryAccess, (nint*)IntPtr.Add(BaseAddress, pointerAddressJackEyeHP), 0xB8, 0x10, 0x30, 0x28, 0x110, 0x90, 0x10, 0x20 + (i * 0x8), 0x10);
                 }
             }
         }
